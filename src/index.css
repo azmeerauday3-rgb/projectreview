@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-headline: "Manrope", sans-serif;
+
+  --color-surface-container-low: #f0f4f7;
+  --color-on-primary-fixed: #ffffff;
+  --color-error: #a83836;
+  --color-secondary-container: #d8e3f8;
+  --color-primary: #0053dc;
+  --color-on-primary-container: #000000;
+  --color-inverse-on-surface: #9a9d9f;
+  --color-surface: #f7f9fb;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-surface-variant: #596064;
+  --color-on-tertiary-fixed: #382e55;
+  --color-error-container: #fa746f;
+  --color-tertiary: #635983;
+  --color-surface-bright: #f7f9fb;
+  --color-on-error-container: #6e0a12;
+  --color-on-tertiary-fixed-variant: #554a74;
+  --color-on-secondary-container: #475263;
+  --color-primary-fixed: #3e76fe;
+  --color-on-tertiary-container: #4b416a;
+  --color-tertiary-container: #d8cafc;
+  --color-secondary-fixed-dim: #cad5ea;
+  --color-inverse-primary: #618bff;
+  --color-background: #f7f9fb;
+  --color-surface-dim: #d4dbdf;
+  --color-on-secondary-fixed-variant: #515c6e;
+  --color-primary-fixed-dim: #2d68f0;
+  --color-on-secondary-fixed: #354050;
+  --color-on-background: #2c3437;
+  --color-surface-container-highest: #dce4e8;
+  --color-primary-dim: #0049c2;
+  --color-surface-container: #eaeff2;
+  --color-tertiary-fixed-dim: #cabded;
+  --color-primary-container: #3e76fe;
+  --color-error-dim: #67040d;
+  --color-on-surface: #2c3437;
+  --color-tertiary-fixed: #d8cafc;
+  --color-on-primary: #faf8ff;
+  --color-on-tertiary: #fdf7ff;
+  --color-secondary-fixed: #d8e3f8;
+  --color-outline-variant: #acb3b7;
+  --color-outline: #747c80;
+  --color-surface-variant: #dce4e8;
+  --color-secondary: #556071;
+  --color-secondary-dim: #495465;
+  --color-inverse-surface: #0b0f10;
+  --color-on-error: #fff7f6;
+  --color-on-secondary: #f8f8ff;
+  --color-surface-container-high: #e3e9ed;
+  --color-tertiary-dim: #574d76;
+  --color-surface-tint: #0053dc;
+  --color-on-primary-fixed-variant: #f9f7ff;
+}
+
+@utility editorial-gradient {
+  background: linear-gradient(135deg, #0053dc 0%, #3e76fe 100%);
+}
+
+@utility glass-panel {
+  background: rgba(247, 249, 251, 0.8);
+  backdrop-filter: blur(20px);
+}
+
+@layer base {
+  body {
+    @apply bg-background font-sans text-on-background antialiased;
+  }
+}
+
