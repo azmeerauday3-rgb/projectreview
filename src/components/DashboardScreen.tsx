@@ -10,8 +10,13 @@ import {
   TrendingUp
 } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
+import { Task } from '../types';
 
-export function DashboardScreen() {
+export function DashboardScreen({ tasks, toggleTaskStatus }: { tasks: Task[], toggleTaskStatus: (id: string) => void }) {
+  const completedTasks = tasks.filter(t => t.status === 'completed');
+  const pendingTasks = tasks.filter(t => t.status === 'pending');
+  const completionRate = tasks.length > 0 ? Math.round((completedTasks.length / tasks.length) * 100) : 0;
+
   return (
     <div className="pt-24 pb-12 px-8 max-w-7xl mx-auto">
       {/* Welcome Section */}
@@ -21,7 +26,7 @@ export function DashboardScreen() {
         className="mb-10"
       >
         <h2 className="text-4xl font-headline font-extrabold tracking-tight text-on-background mb-2">Good morning, Julian.</h2>
-        <p className="text-on-surface-variant text-lg">You have 6 tasks spanning 2 projects scheduled for today.</p>
+        <p className="text-on-surface-variant text-lg">You have {pendingTasks.length} tasks spanning 2 projects scheduled for today.</p>
       </motion.div>
 
       {/* Bento Grid: Stats & Productivity */}
@@ -40,8 +45,8 @@ export function DashboardScreen() {
             <span className="text-xs font-bold text-on-surface-variant/60 uppercase tracking-widest">Total</span>
           </div>
           <div>
-            <div className="text-4xl font-bold text-on-background">124</div>
-            <div className="text-sm text-on-surface-variant mt-1">Tasks managed this month</div>
+            <div className="text-4xl font-bold text-on-background">{tasks.length}</div>
+            <div className="text-sm text-on-surface-variant mt-1">Tasks managed this session</div>
           </div>
         </motion.div>
 
@@ -59,9 +64,9 @@ export function DashboardScreen() {
             <span className="text-xs font-bold text-on-surface-variant/60 uppercase tracking-widest">Completed</span>
           </div>
           <div>
-            <div className="text-4xl font-bold text-on-background">89</div>
+            <div className="text-4xl font-bold text-on-background">{completedTasks.length}</div>
             <div className="text-sm text-on-surface-variant mt-1 flex items-center gap-1">
-              <span className="text-emerald-600 font-bold">+12%</span> vs last week
+              <span className="text-emerald-600 font-bold">{completionRate}%</span> completion rate
             </div>
           </div>
         </motion.div>
@@ -111,8 +116,8 @@ export function DashboardScreen() {
             <span className="text-xs font-bold text-on-surface-variant/60 uppercase tracking-widest">Pending</span>
           </div>
           <div>
-            <div className="text-4xl font-bold text-on-background">35</div>
-            <div className="text-sm text-on-surface-variant mt-1">Requiring review</div>
+            <div className="text-4xl font-bold text-on-background">{pendingTasks.length}</div>
+            <div className="text-sm text-on-surface-variant mt-1">Requiring action</div>
           </div>
         </motion.div>
 
@@ -145,32 +150,30 @@ export function DashboardScreen() {
             <button className="text-primary text-sm font-semibold hover:underline">View Schedule</button>
           </div>
           <div className="space-y-3">
-            {[
-              { title: 'Finalize Q3 Editorial Calendar', time: '09:00 AM', tag: 'Strategy', color: 'bg-secondary-container/50', tagColor: 'text-on-secondary-container' },
-              { title: 'Team Synch: Visual Identity Revamp', time: '11:30 AM', tag: 'Design', color: 'bg-tertiary-container/50', tagColor: 'text-on-tertiary-container' },
-              { title: 'Review Weekly Analytics Report', time: '08:00 AM', tag: 'Admin', color: 'bg-surface-container-highest', tagColor: 'text-on-surface-variant/60', completed: true },
-              { title: 'Interview: Senior UX Writer Candidate', time: '02:00 PM', tag: 'HR', color: 'bg-secondary-container/50', tagColor: 'text-on-secondary-container' },
-            ].map((task, i) => (
+            {tasks.slice(0, 4).map((task, i) => (
               <motion.div 
-                key={i}
+                key={task.id}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.6 + i * 0.1 }}
                 className="group bg-surface-container-lowest p-5 rounded-xl flex items-center gap-4 transition-all hover:translate-x-1 duration-300 shadow-sm"
               >
-                <div className={cn(
-                  "w-6 h-6 border-2 rounded-md flex items-center justify-center transition-colors cursor-pointer",
-                  task.completed ? "bg-primary/10 border-primary text-primary" : "border-outline-variant group-hover:border-primary"
-                )}>
-                  {task.completed && <CheckCircle className="w-4 h-4" />}
-                </div>
+                <button 
+                  onClick={() => toggleTaskStatus(task.id)}
+                  className={cn(
+                    "w-6 h-6 border-2 rounded-md flex items-center justify-center transition-colors cursor-pointer",
+                    task.status === 'completed' ? "bg-primary/10 border-primary text-primary" : "border-outline-variant group-hover:border-primary"
+                  )}
+                >
+                  {task.status === 'completed' && <CheckCircle className="w-4 h-4" />}
+                </button>
                 <div className="flex-1">
-                  <h4 className={cn("font-semibold text-on-background", task.completed && "text-on-surface-variant line-through")}>{task.title}</h4>
+                  <h4 className={cn("font-semibold text-on-background", task.status === 'completed' && "text-on-surface-variant line-through")}>{task.title}</h4>
                   <div className="flex items-center gap-3 mt-1">
                     <span className="text-xs text-on-surface-variant flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> {task.time}
+                      <Clock className="w-3 h-3" /> {task.time || task.due}
                     </span>
-                    <span className={cn("px-2 py-0.5 text-[10px] font-bold rounded uppercase", task.color, task.tagColor)}>{task.tag}</span>
+                    <span className={cn("px-2 py-0.5 text-[10px] font-bold rounded uppercase", task.color || 'bg-surface-container-high', task.tagColor || 'text-on-surface-variant')}>{task.tag || 'General'}</span>
                   </div>
                 </div>
                 <MoreVertical className="w-5 h-5 text-on-surface-variant/40" />

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { 
   X, 
@@ -9,8 +9,33 @@ import {
   TrendingUp
 } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
+import { Task } from '../types';
 
-export function CreateTaskScreen({ onCancel, onSave }: { onCancel: () => void, onSave: () => void }) {
+export function CreateTaskScreen({ onCancel, onSave }: { onCancel: () => void, onSave: (task: Partial<Task>) => void }) {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [priority, setPriority] = useState<'Low Priority' | 'Medium Priority' | 'High Priority'>('Medium Priority');
+  const [dueDate, setDueDate] = useState('');
+
+  const handleSave = () => {
+    if (!title.trim()) return;
+
+    const newTask: Partial<Task> = {
+      title,
+      description,
+      priority,
+      due: dueDate || 'Today',
+      status: 'pending',
+      priorityColor: priority === 'High Priority' 
+        ? 'bg-error-container/10 text-error' 
+        : priority === 'Medium Priority' 
+          ? 'bg-secondary-container text-on-secondary-container' 
+          : 'bg-surface-container-high text-on-surface-variant'
+    };
+
+    onSave(newTask);
+  };
+
   return (
     <div className="pt-24 pb-12 px-6 md:px-12 lg:px-24">
       <div className="max-w-4xl mx-auto">
@@ -47,12 +72,14 @@ export function CreateTaskScreen({ onCancel, onSave }: { onCancel: () => void, o
                   className="w-full text-2xl font-semibold bg-transparent border-none focus:ring-0 placeholder:text-surface-dim p-0" 
                   placeholder="What needs to be done?" 
                   type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                 />
                 <div className="h-0.5 w-full bg-surface-container-low relative">
                   <motion.div 
                     initial={{ width: 0 }}
-                    animate={{ width: '25%' }}
-                    className="absolute left-0 top-0 h-full bg-primary rounded-full" 
+                    animate={{ width: title ? '100%' : '25%' }}
+                    className="absolute left-0 top-0 h-full bg-primary rounded-full transition-all duration-300" 
                   />
                 </div>
               </div>
@@ -62,6 +89,8 @@ export function CreateTaskScreen({ onCancel, onSave }: { onCancel: () => void, o
                   className="w-full bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary/20 p-4 text-on-surface placeholder:text-outline/50 resize-none" 
                   placeholder="Add context, links, or sub-tasks..." 
                   rows={6}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                 ></textarea>
               </div>
             </motion.section>
@@ -78,10 +107,14 @@ export function CreateTaskScreen({ onCancel, onSave }: { onCancel: () => void, o
                   <AlertCircle className="w-4 h-4" />
                   <span className="text-xs font-bold uppercase tracking-widest">Priority level</span>
                 </div>
-                <select className="w-full bg-surface-container-lowest border-none rounded-md py-3 px-4 text-on-surface font-medium focus:ring-2 focus:ring-primary/20 appearance-none">
-                  <option>Low Priority</option>
-                  <option selected>Medium Priority</option>
-                  <option>High Priority</option>
+                <select 
+                  className="w-full bg-surface-container-lowest border-none rounded-md py-3 px-4 text-on-surface font-medium focus:ring-2 focus:ring-primary/20 appearance-none"
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value as any)}
+                >
+                  <option value="Low Priority">Low Priority</option>
+                  <option value="Medium Priority">Medium Priority</option>
+                  <option value="High Priority">High Priority</option>
                 </select>
               </div>
               <div className="bg-surface-container-low p-6 rounded-lg space-y-4">
@@ -89,7 +122,12 @@ export function CreateTaskScreen({ onCancel, onSave }: { onCancel: () => void, o
                   <CalendarIcon className="w-4 h-4" />
                   <span className="text-xs font-bold uppercase tracking-widest">Due date</span>
                 </div>
-                <input className="w-full bg-surface-container-lowest border-none rounded-md py-3 px-4 text-on-surface font-medium focus:ring-2 focus:ring-primary/20" type="date" />
+                <input 
+                  className="w-full bg-surface-container-lowest border-none rounded-md py-3 px-4 text-on-surface font-medium focus:ring-2 focus:ring-primary/20" 
+                  type="date" 
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                />
               </div>
             </motion.div>
           </div>
@@ -150,7 +188,7 @@ export function CreateTaskScreen({ onCancel, onSave }: { onCancel: () => void, o
               className="space-y-3"
             >
               <button 
-                onClick={onSave}
+                onClick={handleSave}
                 className="w-full py-4 editorial-gradient text-white rounded-lg font-bold tracking-tight shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-200"
               >
                 Save Task
@@ -168,3 +206,4 @@ export function CreateTaskScreen({ onCancel, onSave }: { onCancel: () => void, o
     </div>
   );
 }
+
